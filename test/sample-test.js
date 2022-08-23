@@ -220,30 +220,7 @@ it("check the require of the supplyController",async()=>{
   expect(paxg.connect(signer2).setSupplyController(signer1.address)).to.be.revertedWith("only SupplyController or Owner");
   expect(paxg.setSupplyController(ZERO_ADDRESS)).to.be.revertedWith("only SupplyController or Owner");
 
-})
-
-
-
-
-
-
-
-
-
-
-
-      
-  
-
-
-     
-
-      
-
-
-     
-      
-      
+})    
   
     })
   
