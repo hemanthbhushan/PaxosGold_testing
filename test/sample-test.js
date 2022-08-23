@@ -153,6 +153,36 @@ it("checking the claimOwnership for require condition",async()=>{
 })
 
 //----checking for  reclaimPAXG()
+//the owner claims all the balance stored in the contract address to the owner address
+it("testing the reclaimPAXG",async()=>{
+  await paxg.unpause();
+  await paxg.increaseSupply(100);
+  
+  await paxg.transfer(paxg.address,10);
+  expect(await paxg.balanceOf(paxg.address)).to.equal(10);
+
+  await paxg.reclaimPAXG();
+  expect(await paxg.balanceOf(paxg.address)).to.equal(0);
+})
+it("checking the reclaimPAXG with require condition",async()=>{
+  expect(paxg.connect(signer1).reclaimPAXG()).to.be.revertedWith("onlyOwner")
+})
+
+//---checking setAssetProtectionRole(address _newAssetProtectionRole);
+//this function is used in the freez function if the account found suspectable
+//initialy this will be equal to address(0);
+it("check set Asset Protection Role ",async()=>{
+  await paxg.setAssetProtectionRole(signer1.address);
+  expect(await paxg.assetProtectionRole()).to.equal(signer1.address);
+
+})
+it("checking the require condition for set Asset Protection Role ",async()=>{
+  expect(paxg.connect(signer1).setAssetProtectionRole(signer2.address)).to.be.revertedWith("only assetProtectionRole or Owner");
+})
+
+
+
+
 
 
 
