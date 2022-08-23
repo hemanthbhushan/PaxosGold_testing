@@ -180,6 +180,50 @@ it("checking the require condition for set Asset Protection Role ",async()=>{
   expect(paxg.connect(signer1).setAssetProtectionRole(signer2.address)).to.be.revertedWith("only assetProtectionRole or Owner");
 })
 
+//-----checking for wipeFrozenAddress(address _addr)
+it("test wipe Frozen Address",async()=>{
+  await paxg.unpause();
+  await paxg.increaseSupply(100);
+  await paxg.transfer(signer2.address,10);
+  await paxg.setAssetProtectionRole(signer1.address);
+  await paxg.connect(signer1).freeze(signer2.address);
+
+  expect(await paxg.balanceOf(signer2.address)).to.equal(10);
+  expect(await paxg.totalSupply()).to.equal(100);
+
+  await paxg.connect(signer1).wipeFrozenAddress(signer2.address); 
+
+  expect(await paxg.balanceOf(signer2.address)).to.equal(0);
+  expect(await paxg.totalSupply()).to.equal(90);
+
+  expect(await paxg.isFrozen(signer2.address)).to.equal(true);
+
+  await paxg.connect(signer1).unfreeze(signer2.address);
+  expect(await paxg.isFrozen(signer2.address)).to.equal(false);
+
+})
+//checking the supplyController ,initially owner will be the supplyController if we to change use this function
+it("check the supplyController",async()=>{
+  await paxg.setSupplyController(signer1.address);
+  expect(await paxg.totalSupply()).to.equal(0);
+
+  await paxg.connect(signer1).increaseSupply(1000);
+  expect(await paxg.totalSupply()).to.equal(1000);
+
+  await paxg.connect(signer1).decreaseSupply(100);
+  expect(await paxg.totalSupply()).to.equal(900);
+  
+
+})
+it("check the require of the supplyController",async()=>{
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+  expect(paxg.connect(signer2).setSupplyController(signer1.address)).to.be.revertedWith("only SupplyController or Owner");
+  expect(paxg.setSupplyController(ZERO_ADDRESS)).to.be.revertedWith("only SupplyController or Owner");
+
+})
+
+
+
 
 
 
